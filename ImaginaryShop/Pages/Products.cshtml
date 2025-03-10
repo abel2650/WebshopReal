@@ -1,0 +1,82 @@
+﻿@page
+@model ImaginaryShop.Pages.ProductsModel
+@{
+}
+<section class="py-5">
+    @Html.AntiForgeryToken()
+ 
+    <div class="container px-4 px-lg-5 mt-5">
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+                 @foreach (var item in Model.Products)
+            {
+
+              <div class="col mb-5">
+                    <div class="card h-100">
+                        <!-- Product image-->
+                        <img class="card-img-top" src="~/imgs/@item.ImageUrl" />
+                        <!-- Product details-->
+                        <div class="card-body p-4">
+                            <div class="text-center">@item.ProductName
+                                <!-- Product name-->
+                                <div class="d-flex justify-content-between p-3 ">
+                                <h3 class="fw-bolder"> @item.Price @item.Currency</h3>
+                                <!-- Product price-->
+                                <div class="flex-right">
+
+
+                                       
+
+                                        @if (!User.IsInRole("Admin"))
+                                        {
+                                            //Admin må ikke lægge varer i en indkøbskurv
+                                            <button class="cart-button" data-product-id="@item.ProductID">
+                                                <i class="fas fa-shopping-cart"></i> <!-- Indkøbskurv ikon -->
+                                            </button>
+                                        }
+                               </div>
+                               </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+               
+            }           
+           
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll('.cart-button').forEach(button => {
+                button.addEventListener('click', async function (event) {
+                    event.preventDefault();
+
+                    let productId = this.dataset.productId; // Hent produkt-id fra data-attribut
+
+                    // Hent CSRF-token (hvis nødvendigt)
+                    let csrfToken = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+                    try {
+                        let response = await fetch('/ShoppingBasket?Handler=QuickAdd', {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/x-www-form-urlencoded",
+                                "XSRF-TOKEN": csrfToken // Tilføj CSRF-token
+                            },
+                            body: new URLSearchParams({ productId: productId }) // Form-data format
+                        });
+
+                        if (!response.ok) throw new Error("Fejl ved forespørgsel");
+
+                        let data = await response.json(); // Konverter svar til JSON
+                        document.getElementById('total').textContent = data.total.toFixed(2); // Opdater total
+
+                    } catch (error) {
+                        console.error("Fejl:", error);
+                    }
+                });
+            });
+        });
+    </script>
+
+</section>
