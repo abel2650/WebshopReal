@@ -94,7 +94,7 @@ namespace ImaginaryShop
             app.MapRazorPages();
             app.MapControllers();
 
-         //   Seed(app.Services);
+            // Seed(app.Services);
             app.Run();
         }
 
@@ -102,14 +102,16 @@ namespace ImaginaryShop
         private static void Seed(IServiceProvider serviceProvider)
         {
             User u = new User();
-            u.UserName = "master2";
+            u.UserName = "sigmaa";
             u.FullName = "The master2";
-            u.Email = "Test243";
-            u.Role = User.UserRole.Admin;
+            u.Email = "Test2436";
+            u.Role = User.UserRole.Customer;
 
             string pass = "123456789012";
             string hashedpassword = Argon2.Hash(pass);
             u.PasswordHash = hashedpassword;
+
+
 
             UserRepository ur = new UserRepository(serviceProvider.GetRequiredService<IConfiguration>());
             ur.CreateUser(u);
