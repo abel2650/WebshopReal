@@ -2,58 +2,57 @@
 @model ImaginaryShop.Pages.ProductsModel
 @{
 }
+
 <section class="py-5">
     @Html.AntiForgeryToken()
- 
-    <div class="container px-4 px-lg-5 mt-5">
-        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
-                 @foreach (var item in Model.Products)
-            {
 
-              <div class="col mb-5">
+    <div class="container px-4 px-lg-5 mt-5">
+        <!-- Søgeformular -->
+        <form method="get" class="mb-4">
+            <input type="text" name="searchTerm" placeholder="Søg efter produkter..." value="@Model.SearchTerm" class="form-control d-inline-block w-50" />
+            <button type="submit" class="btn btn-primary">Søg</button>
+        </form>
+
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+            @foreach (var item in Model.Products)
+            {
+                <div class="col mb-5">
                     <div class="card h-100">
                         <!-- Product image-->
                         <img class="card-img-top" src="~/imgs/@item.ImageUrl" />
                         <!-- Product details-->
                         <div class="card-body p-4">
-                            <div class="text-center">@item.ProductName
+                            <div class="text-center">
+                                @item.ProductName
                                 <!-- Product name-->
-                                <div class="d-flex justify-content-between p-3 ">
-                                <h3 class="fw-bolder"> @item.Price @item.Currency</h3>
-                                <!-- Product price-->
-                                <div class="flex-right">
-
-
-                                       
-
+                                <div class="d-flex justify-content-between p-3">
+                                    <h3 class="fw-bolder">@item.Price @item.Currency</h3>
+                                    <!-- Product price-->
+                                    <div class="flex-right">
                                         @if (!User.IsInRole("Admin"))
                                         {
-                                            //Admin må ikke lægge varer i en indkøbskurv
                                             <button class="cart-button" data-product-id="@item.ProductID">
                                                 <i class="fas fa-shopping-cart"></i> <!-- Indkøbskurv ikon -->
                                             </button>
                                         }
-                               </div>
-                               </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-               
-            }           
-           
+            }
         </div>
     </div>
-    
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             document.querySelectorAll('.cart-button').forEach(button => {
                 button.addEventListener('click', async function (event) {
                     event.preventDefault();
 
-                    let productId = this.dataset.productId; // Hent produkt-id fra data-attribut
+                    let productId = this.dataset.productId;
 
-                    // Hent CSRF-token (hvis nødvendigt)
                     let csrfToken = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
 
                     try {
@@ -61,15 +60,15 @@
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/x-www-form-urlencoded",
-                                "XSRF-TOKEN": csrfToken // Tilføj CSRF-token
+                                "XSRF-TOKEN": csrfToken
                             },
-                            body: new URLSearchParams({ productId: productId }) // Form-data format
+                            body: new URLSearchParams({ productId: productId })
                         });
 
                         if (!response.ok) throw new Error("Fejl ved forespørgsel");
 
-                        let data = await response.json(); // Konverter svar til JSON
-                        document.getElementById('total').textContent = data.total.toFixed(2); // Opdater total
+                        let data = await response.json();
+                        document.getElementById('total').textContent = data.total.toFixed(2);
 
                     } catch (error) {
                         console.error("Fejl:", error);
