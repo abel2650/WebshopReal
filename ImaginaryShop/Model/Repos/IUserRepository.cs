@@ -49,5 +49,6 @@
         /// </summary>
         /// <returns>Liste over brugere.</returns>
         List<User> GetAllUsers();
+        User AddUser(User user);
     }
 }

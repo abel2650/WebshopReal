@@ -16,15 +16,20 @@
             <form method="POST" id="signup-form" class="signup-form">
                 <h2 class="form-title">Opret en konto</h2>
                 <div class="form-group">
-                    <input type="text" class="form-input" name="name" id="name" placeholder="Navn" asp-for="NewUser.FullName">
+                    <input type="text" class="form-input" id="name" placeholder="Navn" asp-for="NewUser.FullName">
                 </div>
                 <div class="form-group">
-                    <input type="email" class="form-input" name="email" id="email" placeholder="Email-adresse">
+                    <input type="text" class="form-input" id="username" placeholder="Brugernavn" asp-for="NewUser.UserName">
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-input" id="email" placeholder="Email-adresse" asp-for="NewUser.Email">
+
                 </div>
                 <div style="display: flex; ">
                     <div>
                         <div class="form-group">
-                            <input type="text" class="form-input" name="password" id="password" placeholder="Password">
+                            <input type="password" class="form-input" asp-for="NewUser.PasswordHash" placeholder="Password">
+
                             <span toggle="#password" class="zmdi zmdi-eye field-icon toggle-password"></span>
                         </div>
                         <div class="form-group">
@@ -140,7 +145,7 @@
         $(document).ready(function () {
            
 
-            $('#password').on('input', function (e) {
+            $('#passwordHash').on('input', function (e) {
                 let password = $(this).val();
                 console.log(password);
                 $.ajax({

@@ -1,191 +1,200 @@
-﻿using ImaginaryShop.Model;
+﻿// UserRepository.cs
+using ImaginaryShop.Model;
+using ImaginaryShop.Model.Repos;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using Microsoft.Data.SqlClient;
-using System.Net.NetworkInformation;
 using static ImaginaryShop.Model.User;
-using ImaginaryShop.Model.Repos;
 
-public class UserRepository : IUserRepository
+namespace ImaginaryShop.Model.Repos
 {
-    private readonly string _connectionString;
-
-    public UserRepository(IConfiguration configuration)
+    public class UserRepository : IUserRepository
     {
-        _connectionString = configuration.GetConnectionString("DefaultConnection");
-    }
+        private readonly string _connectionString;
 
-    // Opret en ny bruger
-    public User CreateUser(User user)
-    {
-        using (var connection = new SqlConnection(_connectionString))
+        public UserRepository(IConfiguration configuration)
         {
-            const string query = @"
-                INSERT INTO Users (UserName, Email, PasswordHash, FullName, Role, CreatedAt)
-                OUTPUT INSERTED.UserId
-                VALUES (@UserName, @Email, @PasswordHash, @FullName, @Role, @CreatedAt)";
-
-            connection.Open();
-            using (var command = new SqlCommand(query, connection))
-            {
-                command.Parameters.AddWithValue("@UserName", user.UserName);
-                command.Parameters.AddWithValue("@Email", user.Email);
-                command.Parameters.AddWithValue("@PasswordHash", user.PasswordHash);
-                command.Parameters.AddWithValue("@FullName", user.FullName);
-                command.Parameters.AddWithValue("@Role", user.Role);
-                command.Parameters.AddWithValue("@CreatedAt",DateTime.Now);
-
-                // Execute and get the inserted UserId
-                user.UserId = (int)command.ExecuteScalar();
-                return user;
-            }
+            _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
-    }
 
-    // Hent en bruger baseret på email
-    public User GetUserByEmail(string email)
-    {
-        using (var connection = new SqlConnection(_connectionString))
+        // Opret en ny bruger
+        public User CreateUser(User user)
         {
-            const string query = "SELECT * FROM Users WHERE Email = @Email";
-            connection.Open();
-            using (var command = new SqlCommand(query, connection))
+            using (var connection = new SqlConnection(_connectionString))
             {
-                command.Parameters.AddWithValue("@Email", email);
-                using (var reader = command.ExecuteReader())
+                const string query = @"
+                    INSERT INTO Users (UserName, Email, PasswordHash, FullName, Role, CreatedAt)
+                    OUTPUT INSERTED.UserId
+                    VALUES (@UserName, @Email, @PasswordHash, @FullName, @Role, @CreatedAt)";
+
+                connection.Open();
+                using (var command = new SqlCommand(query, connection))
                 {
-                    if (reader.Read())
-                    {
-                        return MapUser(reader);
-                    }
+                    command.Parameters.AddWithValue("@UserName", user.UserName);
+                    command.Parameters.AddWithValue("@Email", user.Email);
+                    command.Parameters.AddWithValue("@PasswordHash", user.PasswordHash);
+                    command.Parameters.AddWithValue("@FullName", user.FullName);
+                    command.Parameters.AddWithValue("@Role", user.Role);
+                    command.Parameters.AddWithValue("@CreatedAt", DateTime.Now);
+
+                    // Execute and get the inserted UserId
+                    user.UserId = (int)command.ExecuteScalar();
+                    return user;
                 }
             }
         }
-        return null;
-    }
-    public User GetUserByUserName(string uname)
-    {
-        using (var connection = new SqlConnection(_connectionString))
+
+        // Tilføj en bruger (AddUser metoden)
+        public User AddUser(User user)
         {
-            const string query = "SELECT * FROM Users WHERE UserName = @UserName";
-            connection.Open();
-            using (var command = new SqlCommand(query, connection))
+            // Kald CreateUser for at tilføje en bruger
+            return CreateUser(user); // Kald CreateUser-metoden for at oprette brugeren
+        }
+
+        // Hent en bruger baseret på email
+        public User GetUserByEmail(string email)
+        {
+            using (var connection = new SqlConnection(_connectionString))
             {
-                command.Parameters.AddWithValue("@UserName", uname);
-                using (var reader = command.ExecuteReader())
+                const string query = "SELECT * FROM Users WHERE Email = @Email";
+                connection.Open();
+                using (var command = new SqlCommand(query, connection))
                 {
-                    if (reader.Read())
+                    command.Parameters.AddWithValue("@Email", email);
+                    using (var reader = command.ExecuteReader())
                     {
-                        return MapUser(reader);
+                        if (reader.Read())
+                        {
+                            return MapUser(reader);
+                        }
                     }
                 }
             }
+            return null;
         }
-        return null;
-    }
 
-    // Hent en bruger baseret på ID
-    public User GetUserById(int userId)
-    {
-        using (var connection = new SqlConnection(_connectionString))
+        // Hent en bruger baseret på brugernavn
+        public User GetUserByUserName(string uname)
         {
-            const string query = "SELECT * FROM Users WHERE UserId = @UserId";
-            connection.Open();
-            using (var command = new SqlCommand(query, connection))
+            using (var connection = new SqlConnection(_connectionString))
             {
-                command.Parameters.AddWithValue("@UserId", userId);
-                using (var reader = command.ExecuteReader())
+                const string query = "SELECT * FROM Users WHERE UserName = @UserName";
+                connection.Open();
+                using (var command = new SqlCommand(query, connection))
                 {
-                    if (reader.Read())
+                    command.Parameters.AddWithValue("@UserName", uname);
+                    using (var reader = command.ExecuteReader())
                     {
-                        return MapUser(reader);
+                        if (reader.Read())
+                        {
+                            return MapUser(reader);
+                        }
                     }
                 }
             }
+            return null;
         }
-        return null;
-    }
 
-    // Opdater en bruger
-    public User UpdateUser(User user)
-    {
-        using (var connection = new SqlConnection(_connectionString))
+        // Hent en bruger baseret på ID
+        public User GetUserById(int userId)
         {
-            const string query = @"
-                UPDATE Users 
-                SET UserName = @UserName, Email = @Email, PasswordHash = @PasswordHash, FullName = @FullName, Role = @Role
-                WHERE UserId = @UserId";
-
-            connection.Open();
-            using (var command = new SqlCommand(query, connection))
+            using (var connection = new SqlConnection(_connectionString))
             {
-                command.Parameters.AddWithValue("@UserName", user.UserName);
-                command.Parameters.AddWithValue("@Email", user.Email);
-                command.Parameters.AddWithValue("@PasswordHash", user.PasswordHash);
-                command.Parameters.AddWithValue("@FullName", user.FullName);
-                command.Parameters.AddWithValue("@Role", user.Role);
-                command.Parameters.AddWithValue("@UserId", user.UserId);
-
-                command.ExecuteNonQuery();
-                return user;
-            }
-        }
-    }
-
-    // Slet en bruger
-    public void DeleteUser(int userId)
-    {
-        using (var connection = new SqlConnection(_connectionString))
-        {
-            const string query = "DELETE FROM Users WHERE UserId = @UserId";
-            connection.Open();
-            using (var command = new SqlCommand(query, connection))
-            {
-                command.Parameters.AddWithValue("@UserId", userId);
-                command.ExecuteNonQuery();
-            }
-        }
-    }
-
-    // Hent alle brugere
-    public List<User> GetAllUsers()
-    {
-        var users = new List<User>();
-        using (var connection = new SqlConnection(_connectionString))
-        {
-            const string query = "SELECT * FROM Users";
-            connection.Open();
-            using (var command = new SqlCommand(query, connection))
-            {
-                using (var reader = command.ExecuteReader())
+                const string query = "SELECT * FROM Users WHERE UserId = @UserId";
+                connection.Open();
+                using (var command = new SqlCommand(query, connection))
                 {
-                    while (reader.Read())
+                    command.Parameters.AddWithValue("@UserId", userId);
+                    using (var reader = command.ExecuteReader())
                     {
-                        users.Add(MapUser(reader));
+                        if (reader.Read())
+                        {
+                            return MapUser(reader);
+                        }
                     }
                 }
             }
+            return null;
         }
-        return users;
-    }
 
-    // Mapper database-læseren til en User-objekt
-    private User MapUser(IDataReader reader)
-    {
-        return new User
+        // Opdater en bruger
+        public User UpdateUser(User user)
         {
-            UserId = Convert.ToInt32(reader["UserId"]),
-            UserName = reader["UserName"].ToString(),
-            Email = reader["Email"].ToString(),
-            PasswordHash = reader["PasswordHash"].ToString(),
-            FullName = reader["FullName"].ToString(),
-            Role = (UserRole)Enum.ToObject(typeof(UserRole), Convert.ToInt32(reader["Role"])),
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                const string query = @"
+                    UPDATE Users 
+                    SET UserName = @UserName, Email = @Email, PasswordHash = @PasswordHash, FullName = @FullName, Role = @Role
+                    WHERE UserId = @UserId";
 
+                connection.Open();
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@UserName", user.UserName);
+                    command.Parameters.AddWithValue("@Email", user.Email);
+                    command.Parameters.AddWithValue("@PasswordHash", user.PasswordHash);
+                    command.Parameters.AddWithValue("@FullName", user.FullName);
+                    command.Parameters.AddWithValue("@Role", user.Role);
+                    command.Parameters.AddWithValue("@UserId", user.UserId);
 
+                    command.ExecuteNonQuery();
+                    return user;
+                }
+            }
+        }
 
-            CreatedAt = Convert.ToDateTime(reader["CreatedAt"]),
-            LastLogin = reader["LastLogin"] as DateTime?
-        };
+        // Slet en bruger
+        public void DeleteUser(int userId)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                const string query = "DELETE FROM Users WHERE UserId = @UserId";
+                connection.Open();
+                using (var command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@UserId", userId);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        // Hent alle brugere
+        public List<User> GetAllUsers()
+        {
+            var users = new List<User>();
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                const string query = "SELECT * FROM Users";
+                connection.Open();
+                using (var command = new SqlCommand(query, connection))
+                {
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            users.Add(MapUser(reader));
+                        }
+                    }
+                }
+            }
+            return users;
+        }
+
+        // Mapper database-læseren til en User-objekt
+        private User MapUser(IDataReader reader)
+        {
+            return new User
+            {
+                UserId = Convert.ToInt32(reader["UserId"]),
+                UserName = reader["UserName"].ToString(),
+                Email = reader["Email"].ToString(),
+                PasswordHash = reader["PasswordHash"].ToString(),
+                FullName = reader["FullName"].ToString(),
+                Role = (UserRole)Enum.ToObject(typeof(UserRole), Convert.ToInt32(reader["Role"])),
+                CreatedAt = Convert.ToDateTime(reader["CreatedAt"]),
+                LastLogin = reader["LastLogin"] as DateTime?
+            };
+        }
     }
 }

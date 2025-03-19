@@ -102,7 +102,7 @@ namespace ImaginaryShop
         private static void Seed(IServiceProvider serviceProvider)
         {
             User u = new User();
-            u.UserName = "sigmaa";
+            
             u.FullName = "The master2";
             u.Email = "Test2436";
             u.Role = User.UserRole.Customer;
