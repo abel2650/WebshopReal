@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using ImaginaryShop.Model;
 using ImaginaryShop.Model.Repos;
 using System.Diagnostics;
-using BCrypt.Net; 
+using Isopoh.Cryptography.Argon2;
 
 namespace ImaginaryShop.Pages
 {
@@ -38,8 +38,8 @@ namespace ImaginaryShop.Pages
 
             try
             {
-                // 🔥 Hash passwordet, før det gemmes
-                NewUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword(NewUser.PasswordHash);
+                // Hash passwordet med Argon2, før det gemmes
+                NewUser.PasswordHash = Argon2.Hash(NewUser.PasswordHash);
 
                 NewUser.CreatedAt = DateTime.UtcNow;
                 _userRepository.AddUser(NewUser);
