@@ -54,6 +54,7 @@ namespace ImaginaryShop.Pages
             return new JsonResult(new { success = true });
         }
 
+        [ValidateAntiForgeryToken]
         public IActionResult OnPostQuickAdd(int productId)
         {
             // Henter brugerens indkøbskurv fra sessionen

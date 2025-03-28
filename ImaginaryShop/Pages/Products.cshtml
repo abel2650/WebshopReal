@@ -60,15 +60,19 @@
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/x-www-form-urlencoded",
-                                "XSRF-TOKEN": csrfToken
+                                "RequestVerificationToken": csrfToken
                             },
-                            body: new URLSearchParams({ productId: productId })
+                            body: new URLSearchParams({ 
+                                productId: productId,
+                                __RequestVerificationToken: csrfToken 
+                            })
                         });
 
                         if (!response.ok) throw new Error("Fejl ved forespørgsel");
 
                         let data = await response.json();
                         document.getElementById('total').textContent = data.total.toFixed(2);
+                        document.getElementById('cartCount').textContent = data.itemCount;
 
                     } catch (error) {
                         console.error("Fejl:", error);
