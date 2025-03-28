@@ -96,6 +96,10 @@
                             <a class="dropdown-item" href="/currency/set/&euro;">&euro;</a>
                         </div>
                     </div><strong><label id="total" class="fs-4">0.00</label></strong>
+                    <a href="/ShoppingBasket" class="ms-3" style="text-decoration: none; color: inherit;">
+                        <i class="fa-solid fa-cart-shopping fa-lg"></i>
+                        <span id="cartCount" class="badge bg-primary rounded-pill">0</span>
+                    </a>
 
                     @*
                     <div class="price" id="totalPrice"> 0.00</div>
@@ -199,7 +203,7 @@
                 let response = await fetch("/ShoppingBasket");
                 let data = await response.json();
                 document.getElementById("total").textContent = data.total.toFixed(2);
-
+                document.getElementById("cartCount").textContent = data.itemCount;
 
             } catch (error) {
                 console.log(error)

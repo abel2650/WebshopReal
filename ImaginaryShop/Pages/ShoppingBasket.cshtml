@@ -1,4 +1,137 @@
 ﻿@page
 @model ImaginaryShop.Pages.ShoppingBasketModel
 @{
+    ViewData["Title"] = "Indkøbskurv";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">Din Indkøbskurv</h2>
+    
+    @if (Model.Basket?.Products?.Any() == true)
+    {
+        <div class="row">
+            <div class="col-md-8">
+                @foreach (var item in Model.Basket.Products)
+                {
+                    <div class="card mb-3">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                <img src="@item.Product.ImageUrl" class="img-fluid rounded-start" alt="@item.Product.ProductName">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <h5 class="card-title">@item.Product.ProductName</h5>
+                                    <p class="card-text">
+                                        <small class="text-muted">Antal: @item.Quantity</small>
+                                    </p>
+                                    <p class="card-text">
+                                        <strong>Pris: @item.Product.Price @item.Product.Currency</strong>
+                                    </p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="btn-group">
+                                            <button class="btn btn-sm btn-outline-secondary update-quantity" data-product-id="@item.Product.ProductID" data-action="decrease">-</button>
+                                            <span class="mx-2">@item.Quantity</span>
+                                            <button class="btn btn-sm btn-outline-secondary update-quantity" data-product-id="@item.Product.ProductID" data-action="increase">+</button>
+                                        </div>
+                                        <button class="btn btn-sm btn-danger remove-item" data-product-id="@item.Product.ProductID">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Ordreoversigt</h5>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal:</span>
+                            <span>@Model.Basket.GetTotal() @Model.Basket.Products.FirstOrDefault()?.Product.Currency</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Levering:</span>
+                            <span>Gratis</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-3">
+                            <strong>Total:</strong>
+                            <strong>@Model.Basket.GetTotal() @Model.Basket.Products.FirstOrDefault()?.Product.Currency</strong>
+                        </div>
+                        <button class="btn btn-primary w-100">Gå til betaling</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-center">
+            <i class="fas fa-shopping-cart fa-3x mb-3"></i>
+            <h3>Din indkøbskurv er tom</h3>
+            <p>Der er ingen varer i din indkøbskurv.</p>
+            <a href="/Products" class="btn btn-primary">Se vores produkter</a>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle quantity updates
+            document.querySelectorAll('.update-quantity').forEach(button => {
+                button.addEventListener('click', async function() {
+                    const productId = this.dataset.productId;
+                    const action = this.dataset.action;
+                    
+                    try {
+                        const response = await fetch('/ShoppingBasket?Handler=UpdateQuantity', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: new URLSearchParams({
+                                productId: productId,
+                                action: action
+                            })
+                        });
+                        
+                        if (response.ok) {
+                            window.location.reload();
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                    }
+                });
+            });
+            
+            // Handle item removal
+            document.querySelectorAll('.remove-item').forEach(button => {
+                button.addEventListener('click', async function() {
+                    const productId = this.dataset.productId;
+                    
+                    try {
+                        const response = await fetch('/ShoppingBasket?Handler=RemoveItem', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: new URLSearchParams({
+                                productId: productId
+                            })
+                        });
+                        
+                        if (response.ok) {
+                            window.location.reload();
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                    }
+                });
+            });
+        });
+    </script>
 }
