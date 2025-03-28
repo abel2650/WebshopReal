@@ -4,49 +4,184 @@
 }
 
 <style>
-    .responsive-svg {
-        width: 35%;
-        height: auto;
+    .signup {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 40px 0;
+    }
+
+    .signup-content {
+        background: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+        max-width: 800px;
+        margin: 0 auto;
+        width: 100%;
+    }
+
+    .form-title {
+        color: #333;
+        font-size: 28px;
+        font-weight: 600;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+        position: relative;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e1e1e1;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+    }
+
+    .form-input:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+        outline: none;
+    }
+
+    .form-input::placeholder {
+        color: #6c757d;
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #6c757d;
+        transition: color 0.3s ease;
+    }
+
+    .toggle-password:hover {
+        color: #0d6efd;
+    }
+
+    .button {
+        width: 100%;
+        padding: 12px;
+        background: #0d6efd;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .button:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+    }
+
+    .button:not(:disabled):hover {
+        background: #0b5ed7;
+        transform: translateY(-1px);
+    }
+
+    .loginhere {
+        text-align: center;
+        margin-top: 20px;
+        color: #6c757d;
+    }
+
+    .loginhere-link {
+        color: #0d6efd;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+
+    .loginhere-link:hover {
+        color: #0b5ed7;
+    }
+
+    .password-strength-container {
+        margin: 15px 0;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border: 1px solid #e1e1e1;
     }
 
     .password-strength-meter {
-        height: 8px;
+        height: 6px;
         width: 100%;
-        border-radius: 5px;
-        margin-top: 10px;
+        background: #e1e1e1;
+        border-radius: 3px;
+        overflow: hidden;
+        margin: 10px 0;
     }
 
     .password-strength-meter-bar {
         height: 100%;
-        border-radius: 5px;
         width: 0%;
+        transition: all 0.3s ease;
+        border-radius: 3px;
     }
 
-    /* Farver for passwordstyrken */
     .weak {
-        background-color: red;
+        background: linear-gradient(90deg, #dc3545 0%, #ff6b6b 100%);
     }
 
     .medium {
-        background-color: orange;
+        background: linear-gradient(90deg, #ffc107 0%, #ffd93d 100%);
     }
 
     .strong {
-        background-color: yellow;
+        background: linear-gradient(90deg, #28a745 0%, #4caf50 100%);
     }
 
     .very-strong {
-        background-color: green;
-    }
-
-    .error {
-        color: red;
-        font-size: 14px;
+        background: linear-gradient(90deg, #198754 0%, #2e7d32 100%);
     }
 
     .password-feedback {
-        font-size: 12px;
-        color: #d72626;
+        font-size: 14px;
+        color: #6c757d;
+        margin-top: 5px;
+    }
+
+    .error {
+        color: #dc3545;
+        font-size: 14px;
+        margin-top: 5px;
+    }
+
+    .responsive-svg {
+        width: 100%;
+        max-width: 300px;
+        height: auto;
+        margin: 20px auto;
+        display: block;
+    }
+
+    @@media (max-width: 768px) {
+        .signup-content {
+            padding: 20px;
+            margin: 20px;
+        }
+
+        .form-title {
+            font-size: 24px;
+        }
+
+        .responsive-svg {
+            max-width: 200px;
+        }
     }
 </style>
 
@@ -64,25 +199,15 @@
                 <div class="form-group">
                     <input type="email" class="form-input" id="email" placeholder="Email-adresse" asp-for="NewUser.Email">
                 </div>
-                <div style="display: flex;">
-                    <div>
-                        <div class="form-group">
-                            <input type="password" class="form-input" id="passwordHash" asp-for="NewUser.PasswordHash" placeholder="Password">
-                            <span toggle="#password" class="zmdi zmdi-eye field-icon toggle-password"></span>
-                        </div>
-                        <div class="form-group">
-                            <input type="password" class="form-input" name="re_password" id="re_password" placeholder="Gentag dit password">
-                        </div>
-                    </div>
-                    <div style="padding:20px;">
-                        <svg class="responsive-svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 496.43 333.54">
-                            <!-- SVG content here -->
-                        </svg>
-                    </div>
+                <div class="form-group">
+                    <input type="password" class="form-input" id="passwordHash" asp-for="NewUser.PasswordHash" placeholder="Password">
+                    <span toggle="#password" class="zmdi zmdi-eye field-icon toggle-password"></span>
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-input" name="re_password" id="re_password" placeholder="Gentag dit password">
                 </div>
 
-                <!-- Password Strength Meter -->
-                <div id="password-strength-container">
+                <div class="password-strength-container">
                     <div id="password-strength-meter" class="password-strength-meter">
                         <div id="password-strength-meter-bar" class="password-strength-meter-bar"></div>
                     </div>
@@ -108,13 +233,11 @@
     $(document).ready(function () {
         $('#passwordHash').on('input', function () {
             let password = $(this).val();
-            let result = zxcvbn(password); // Evaluering af passwordstyrke
+            let result = zxcvbn(password);
             $('#passwordMessage').text(result.feedback.suggestions.join(' '));
 
-            // Opdater passwordstyrken meter
             updatePasswordStrength(result.score, password);
 
-            // Valider passwordstyrken og sæt knappen til "aktiv" hvis OK
             if (isPasswordValid(password, result)) {
                 $('#submit').prop('disabled', false);
                 $('#passwordErrorMessage').text('');
@@ -124,7 +247,6 @@
             }
         });
 
-        // Tjekker password validitet
         function isPasswordValid(password, result) {
             if (password.length < 12 || result.score < 3) {
                 return false;
@@ -136,7 +258,6 @@
             let meter = $('#password-strength-meter-bar');
             let passwordStrengthText = "";
 
-            // Tjek længde og styrke af password
             if (password.length < 12) {
                 meter.css('width', '0%').removeClass().addClass('password-strength-meter-bar weak');
                 passwordStrengthText = "Passwordet er for kort. Minimum 12 tegn.";
@@ -156,5 +277,16 @@
 
             $('#passwordMessage').text(passwordStrengthText);
         }
+
+        // Toggle password visibility
+        $('.toggle-password').click(function() {
+            $(this).toggleClass('zmdi-eye zmdi-eye-off');
+            var input = $($(this).attr('toggle'));
+            if (input.attr('type') == 'password') {
+                input.attr('type', 'text');
+            } else {
+                input.attr('type', 'password');
+            }
+        });
     });
 </script>
