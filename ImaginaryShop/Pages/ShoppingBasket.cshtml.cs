@@ -3,6 +3,7 @@ using ImaginaryShop.Model.Repos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ImaginaryShop.Pages
 {
@@ -16,6 +17,7 @@ namespace ImaginaryShop.Pages
             return Page();
         }
 
+        [ValidateAntiForgeryToken]
         public IActionResult OnPostUpdateQuantity(int productId, string action)
         {
             Basket = GetShoppingBasket();
@@ -37,6 +39,7 @@ namespace ImaginaryShop.Pages
             return new JsonResult(new { success = true });
         }
 
+        [ValidateAntiForgeryToken]
         public IActionResult OnPostRemoveItem(int productId)
         {
             Basket = GetShoppingBasket();

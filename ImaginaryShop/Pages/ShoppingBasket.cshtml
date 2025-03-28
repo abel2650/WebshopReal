@@ -4,6 +4,8 @@
     ViewData["Title"] = "Indkøbskurv";
 }
 
+@Html.AntiForgeryToken()
+
 <div class="container mt-5">
     <h2 class="mb-4">Din Indkøbskurv</h2>
     
@@ -81,6 +83,14 @@
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Get the antiforgery token
+            const tokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
+            if (!tokenElement) {
+                console.error('Antiforgery token not found');
+                return;
+            }
+            const token = tokenElement.value;
+
             // Handle quantity updates
             document.querySelectorAll('.update-quantity').forEach(button => {
                 button.addEventListener('click', async function() {
@@ -88,22 +98,28 @@
                     const action = this.dataset.action;
                     
                     try {
-                        const response = await fetch('/ShoppingBasket?Handler=UpdateQuantity', {
+                        const response = await fetch('/ShoppingBasket?handler=UpdateQuantity', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/x-www-form-urlencoded',
+                                'RequestVerificationToken': token
                             },
                             body: new URLSearchParams({
                                 productId: productId,
-                                action: action
+                                action: action,
+                                __RequestVerificationToken: token
                             })
                         });
                         
                         if (response.ok) {
                             window.location.reload();
+                        } else {
+                            console.error('Server returned:', await response.text());
+                            alert('Der opstod en fejl ved opdatering af antal. Prøv igen senere.');
                         }
                     } catch (error) {
                         console.error('Error:', error);
+                        alert('Der opstod en fejl ved opdatering af antal. Prøv igen senere.');
                     }
                 });
             });
@@ -112,23 +128,35 @@
             document.querySelectorAll('.remove-item').forEach(button => {
                 button.addEventListener('click', async function() {
                     const productId = this.dataset.productId;
+                    const card = this.closest('.card');
                     
                     try {
-                        const response = await fetch('/ShoppingBasket?Handler=RemoveItem', {
+                        const response = await fetch('/ShoppingBasket?handler=RemoveItem', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/x-www-form-urlencoded',
+                                'RequestVerificationToken': token
                             },
                             body: new URLSearchParams({
-                                productId: productId
+                                productId: productId,
+                                __RequestVerificationToken: token
                             })
                         });
                         
                         if (response.ok) {
-                            window.location.reload();
+                            // Add a fade out effect
+                            card.style.transition = 'opacity 0.3s ease';
+                            card.style.opacity = '0';
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 300);
+                        } else {
+                            console.error('Server returned:', await response.text());
+                            alert('Der opstod en fejl ved fjernelse af varen. Prøv igen senere.');
                         }
                     } catch (error) {
                         console.error('Error:', error);
+                        alert('Der opstod en fejl ved fjernelse af varen. Prøv igen senere.');
                     }
                 });
             });
