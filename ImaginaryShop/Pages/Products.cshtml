@@ -1,58 +1,119 @@
 ﻿@page
 @model ImaginaryShop.Pages.ProductsModel
 @{
+    ViewData["Title"] = "Vores Produkter";
 }
+
+<!-- Hero Section -->
+<div class="container-fluid bg-light py-5 mb-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 mb-3">Imaginære Produkter</h1>
+                <p class="lead mb-4">Udforsk vores unikke kollektion af produkter, der udfordrer virkeligheden</p>
+            </div>
+            <div class="col-lg-6">
+                <!-- Søgeformular -->
+                <form method="get" class="d-flex gap-2 justify-content-end">
+                    <div class="input-group">
+                        <input type="text" name="searchTerm" placeholder="Søg efter produkter..." 
+                               value="@Model.SearchTerm" class="form-control form-control-lg" />
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <section class="py-5">
     @Html.AntiForgeryToken()
 
-    <div class="container px-4 px-lg-5 mt-5">
-        <!-- Søgeformular -->
-        <form method="get" class="mb-4">
-            <input type="text" name="searchTerm" placeholder="Søg efter produkter..." value="@Model.SearchTerm" class="form-control d-inline-block w-50" />
-            <button type="submit" class="btn btn-primary">Søg</button>
-        </form>
+    <div class="container">
+        @if (!string.IsNullOrEmpty(Model.SearchTerm))
+        {
+            <div class="mb-4">
+                <h5>Søgeresultater for: "@Model.SearchTerm"</h5>
+            </div>
+        }
 
-        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+        <div class="row g-4">
             @foreach (var item in Model.Products)
             {
-                <div class="col mb-5">
-                    <div class="card h-100">
-                        <!-- Product image-->
-                        <img class="card-img-top" src="~/imgs/@item.ImageUrl" />
-                        <!-- Product details-->
+                <div class="col-md-6 col-lg-4 col-xl-3">
+                    <div class="card h-100 border-0 shadow-sm product-card">
+                        <div class="position-relative">
+                            <img class="card-img-top" src="~/imgs/@item.ImageUrl" alt="@item.ProductName" />
+                            @if (!User.IsInRole("Admin"))
+                            {
+                                <button class="cart-button btn btn-primary rounded-circle position-absolute"
+                                        style="right: 15px; bottom: -20px"
+                                        data-product-id="@item.ProductID">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </button>
+                            }
+                        </div>
                         <div class="card-body p-4">
-                            <div class="text-center">
-                                @item.ProductName
-                                <!-- Product name-->
-                                <div class="d-flex justify-content-between p-3">
-                                    <h3 class="fw-bolder">@item.Price @item.Currency</h3>
-                                    <!-- Product price-->
-                                    <div class="flex-right">
-                                        @if (!User.IsInRole("Admin"))
-                                        {
-                                            <button class="cart-button" data-product-id="@item.ProductID">
-                                                <i class="fas fa-shopping-cart"></i> <!-- Indkøbskurv ikon -->
-                                            </button>
-                                        }
-                                    </div>
-                                </div>
+                            <h5 class="card-title mb-3">@item.ProductName</h5>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="h4 mb-0">@item.Price @item.Currency</span>
                             </div>
                         </div>
                     </div>
                 </div>
             }
         </div>
+
+        @if (!Model.Products.Any())
+        {
+            <div class="text-center py-5">
+                <h3>Ingen produkter fundet</h3>
+                <p class="text-muted">Prøv at søge efter noget andet</p>
+            </div>
+        }
     </div>
+
+    <style>
+        .product-card {
+            transition: transform 0.2s ease-in-out;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .product-card img {
+            height: 250px;
+            object-fit: cover;
+        }
+        
+        .cart-button {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease;
+        }
+        
+        .cart-button:hover {
+            transform: scale(1.1);
+        }
+    </style>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             document.querySelectorAll('.cart-button').forEach(button => {
                 button.addEventListener('click', async function (event) {
                     event.preventDefault();
-
+                    
+                    // Tilføj loading animation
+                    const icon = this.querySelector('i');
+                    icon.className = 'fas fa-spinner fa-spin';
+                    
                     let productId = this.dataset.productId;
-
                     let csrfToken = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
 
                     try {
@@ -73,13 +134,23 @@
                         let data = await response.json();
                         document.getElementById('total').textContent = data.total.toFixed(2);
                         document.getElementById('cartCount').textContent = data.itemCount;
+                        
+                        // Vis success animation
+                        icon.className = 'fas fa-check';
+                        setTimeout(() => {
+                            icon.className = 'fas fa-shopping-cart';
+                        }, 1500);
 
                     } catch (error) {
                         console.error("Fejl:", error);
+                        // Vis fejl animation
+                        icon.className = 'fas fa-times';
+                        setTimeout(() => {
+                            icon.className = 'fas fa-shopping-cart';
+                        }, 1500);
                     }
                 });
             });
         });
     </script>
-
 </section>

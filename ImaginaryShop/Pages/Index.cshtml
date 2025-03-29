@@ -4,51 +4,129 @@
     ViewData["Title"] = "Home page";
 }
 
-<!-- Carousel Start -->
-<div class="container-fluid p-0 mb-5 wow fadeIn" data-wow-delay="0.1s">
+<style>
+    .hero-carousel-item {
+        max-height: 600px;
+        overflow: hidden;
+    }
+    
+    .hero-carousel-item img {
+        width: 100%;
+        height: 600px;
+        object-fit: cover;
+        object-position: center;
+    }
+</style>
+
+<!-- Hero Section -->
+<div class="container-fluid p-0 mb-5">
     <div id="header-carousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img class="w-100" src="~/imgs/c11.jpg" alt="Image">
-                <div class="carousel-caption" style="position: absolute;
-   top:200px;">
+            <div class="carousel-item active hero-carousel-item">
+                <img src="~/imgs/virtuelrain.webp" alt="Virtuel Regn">
+                <div class="carousel-caption">
                     <div class="container">
                         <div class="row justify-content-start">
                             <div class="col-lg-7">
-                                <h1 class="display-2 mb-5 animated slideInDown">Hvor fantasi møder virkelighed – opdag det umulige</h1>
-                                <a href="/products" class="btn btn-primary rounded-pill py-sm-3 px-sm-5">Shop nu</a>
-                              
+                                <h1 class="display-2 mb-4 animated slideInDown">Hvor fantasi møder virkelighed</h1>
+                                <p class="lead mb-4">Opdag det umulige i vores unikke samling af imaginære produkter</p>
+                                <a href="/products" class="btn btn-primary btn-lg rounded-pill py-3 px-5">Udforsk vores verden</a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="carousel-item">
-                <img class="w-100" src="~/imgs/c22.jpg" alt="Image">
-                <div class="carousel-caption" style="position: absolute;
-   top:200px;">
+            <div class="carousel-item hero-carousel-item">
+                <img src="~/imgs/tree.webp" alt="Magisk Træ">
+                <div class="carousel-caption">
                     <div class="container">
                         <div class="row justify-content-start">
                             <div class="col-lg-7">
-                                <h1 class="display-2 mb-5 animated slideInDown">Køb det usynlige – fordi virkeligheden er kedelig</h1>
-                                <a href="/products" class="btn btn-primary rounded-pill py-sm-3 px-sm-5">Shop nu</a>
-                             
+                                <h1 class="display-2 mb-4 animated slideInDown">Køb det usynlige</h1>
+                                <p class="lead mb-4">Fordi virkeligheden er kedelig - lad fantasien flyve</p>
+                                <a href="/products" class="btn btn-primary btn-lg rounded-pill py-3 px-5">Shop nu</a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#header-carousel"
-                data-bs-slide="prev">
+        <button class="carousel-control-prev" type="button" data-bs-target="#header-carousel" data-bs-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Previous</span>
         </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#header-carousel"
-                data-bs-slide="next">
+        <button class="carousel-control-next" type="button" data-bs-target="#header-carousel" data-bs-slide="next">
             <span class="carousel-control-next-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Next</span>
         </button>
     </div>
 </div>
-<!-- Carousel End -->
+
+<!-- Featured Products Section -->
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h2 class="display-4">Populære Produkter</h2>
+        <p class="lead">Udforsk vores mest populære imaginære varer</p>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <img src="~/imgs/freshAir.webp" class="card-img-top" alt="Frisk Luft">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Frisk Luft i Flaske</h5>
+                    <p class="card-text">Den reneste luft fra de mest eksotiske steder</p>
+                    <a href="/products" class="btn btn-outline-primary">Lær mere</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <img src="~/imgs/bulb.webp" class="card-img-top" alt="Ideer">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Brændende Ideer</h5>
+                    <p class="card-text">Køb en genial idé i en glødepære</p>
+                    <a href="/products" class="btn btn-outline-primary">Lær mere</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <img src="~/imgs/chill.webp" class="card-img-top" alt="Fred">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Fred i en Boks</h5>
+                    <p class="card-text">Altid rolig, når du har brug for det</p>
+                    <a href="/products" class="btn btn-outline-primary">Lær mere</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Call to Action Section -->
+<div class="container-fluid bg-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h2 class="display-4 mb-3">Klar til at udforske det umulige?</h2>
+                <p class="lead mb-0">Tilslut dig vores eksklusive klub af imaginære produkt-entusiaster</p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a href="/products" class="btn btn-light btn-lg rounded-pill py-3 px-5">Bliv medlem nu</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Newsletter Section -->
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 text-center">
+            <h3 class="mb-4">Hold dig opdateret</h3>
+            <p class="mb-4">Tilmeld dig vores nyhedsbrev for at få de seneste opdateringer om nye imaginære produkter</p>
+            <form class="d-flex gap-2 justify-content-center">
+                <input type="email" class="form-control w-50" placeholder="Din email">
+                <button type="submit" class="btn btn-primary rounded-pill px-4">Tilmeld</button>
+            </form>
+        </div>
+    </div>
+</div>
