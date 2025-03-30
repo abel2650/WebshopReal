@@ -1,0 +1,84 @@
+@page
+@model ImaginaryShop.Pages.PaymentModel
+@{
+    ViewData["Title"] = "Betaling";
+}
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8 mb-4">
+            <div class="card p-4">
+                <div class="card-header py-3">
+                    <h4 class="mb-0">Betalingsoplysninger</h4>
+                </div>
+                <div class="card-body">
+                    <form id="paymentForm">
+                        <!-- Kortholderens navn -->
+                        <div class="mb-3">
+                            <label for="cardName" class="form-label">Navn på kort</label>
+                            <input type="text" class="form-control" id="cardName" required>
+                        </div>
+
+                        <!-- Kortnummer -->
+                        <div class="mb-3">
+                            <label for="cardNumber" class="form-label">Kortnummer</label>
+                            <input type="text" class="form-control" id="cardNumber" placeholder="1234 5678 9012 3456" required>
+                        </div>
+
+                        <div class="row">
+                            <!-- Udløbsdato -->
+                            <div class="col-md-6 mb-3">
+                                <label for="expDate" class="form-label">Udløbsdato</label>
+                                <input type="text" class="form-control" id="expDate" placeholder="MM/ÅÅ" required>
+                            </div>
+
+                            <!-- CVV -->
+                            <div class="col-md-6 mb-3">
+                                <label for="cvv" class="form-label">CVV</label>
+                                <input type="text" class="form-control" id="cvv" placeholder="123" required>
+                                <small class="text-muted">3 cifre på bagsiden af kortet</small>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <button class="btn btn-primary btn-lg w-100" type="submit">Betal nu</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header py-3">
+                    <h4 class="mb-0">Ordreoversigt</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Subtotal</span>
+                            <span id="subtotal">54.98 DKK</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Levering</span>
+                            <span class="text-success">Gratis</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>Total</span>
+                            <strong id="total">54.98 DKK</strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('paymentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            window.location.href = '/OrderConfirmation';
+        });
+    </script>
+} 
