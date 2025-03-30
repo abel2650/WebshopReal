@@ -2,6 +2,7 @@
 @using System.Security.Claims
 @inject CategoryService CategoryService
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
 <!DOCTYPE html>
 <html lang="en">
@@ -11,208 +12,93 @@
     <title>@ViewData["Title"] - ImaginaryShop</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="~/ImaginaryShop.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=person" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body>
-
     <header>
-
-
-
-        <div class="row" style="padding:10px">
-            <div class="col-lg-3 col-md-3">
-            </div>
-
-
-
-
-            <div class="col-lg-12 col-md-12">
-                <div class="flex-right">
-
-
-                    <!-- Login formular -->
-                    @if (User.Identity.IsAuthenticated)
-                    {
-                        <div>@User.Claims.FirstOrDefault(c => c.Type == "Username")?.Value</div>
-                    }
-
-                    <div class="login-container">
-                        <!-- Knap til at åbne formularen -->
-                        <button id="toggleButton"><i class="fa-solid fa-user"></i></button>
-
-                        @if (!User.Identity.IsAuthenticated)
-                        {
-
-                            <!-- Login formular -->
-                            <div id="loginForm">
-                                <h3>Login</h3>
-                                <form id="loginformelement">
-
-                                    <span id="loginMessage" class="message"></span>
-                                    <div class="mb-3">
-                                        <label for="username" class="form-label">Brugernavn</label>
-                                        <input type="text" class="form-control" id="username" required>
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="password" class="form-label">Adgangskode</label>
-                                        <input type="password" class="form-control" id="password" required>
-                                    </div>
-                                    <button type="submit" class="cart-button"><i class="fa-solid fa-right-to-bracket"></i></button>
-                                </form>
-                                <div>
-                                    <a href="/AddAccount">Ingen konto? klik her</a>
-                                </div>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+            <div class="container">
+                <a class="navbar-brand" href="/">
+                    <i class="fas fa-store me-2"></i>
+                    ImaginaryShop
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/"><i class="fas fa-home me-1"></i>Hjem</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/products"><i class="fas fa-box me-1"></i>Produkter</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/categories"><i class="fas fa-tags me-1"></i>Kategorier</a>
+                        </li>
+                    </ul>
+                    
+                    <div class="d-flex align-items-center">
+                        <div class="dropdown me-3">
+                            <button class="btn btn-outline-secondary dropdown-toggle currencyBtn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                @{
+                                    var currency = HttpContextAccessor.HttpContext.Request.Cookies["currency"] ?? "DKK";
+                                }
+                                @currency
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" href="/currency/set/DKK">DKK</a>
+                                <a class="dropdown-item" href="/currency/set/&euro;">€</a>
                             </div>
-                        }
-                        @if (User.Identity.IsAuthenticated)
-                        {
-                            <div id="logOutForm">
-                                <h3>Log ud</h3>
-                                <form id="logoutformelement">
-                                    <button type="submit" class="cart-button"><i class="fa fa-sign-out"></i></button>
-                                </form>
-                            </div>
-                        }
-                    </div>
-
-                    <div class="dropdown">
-
-                        <button class="btn btn-secondary dropdown-toggle currencyBtn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
-
-                            @{
-                                var currency = HttpContextAccessor.HttpContext.Request.Cookies["currency"] ?? "DKK"; // Standardværdi: DKK
-                            }
-                            @currency
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a class="dropdown-item" href="/currency/set/DKK">DKK</a>
-                            <a class="dropdown-item" href="/currency/set/&euro;">&euro;</a>
                         </div>
-                    </div><strong><label id="total" class="fs-4">0.00</label></strong>
-                    <a href="/ShoppingBasket" class="ms-3" style="text-decoration: none; color: inherit;">
-                        <i class="fa-solid fa-cart-shopping fa-lg"></i>
-                        <span id="cartCount" class="badge bg-primary rounded-pill">0</span>
-                    </a>
-
-                    @*
-                    <div class="price" id="totalPrice"> 0.00</div>
-                    <div style="width:10px"></div> *@
+                        
+                        <a href="/ShoppingBasket" class="btn btn-outline-primary me-3 position-relative">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                            <span id="cartCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
+                        </a>
+                        
+                        <div class="dropdown">
+                            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa-solid fa-user"></i>
+                            </button>
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <div id="logOutForm" class="dropdown-menu dropdown-menu-end">
+                                    <span class="dropdown-item-text">@User.Claims.FirstOrDefault(c => c.Type == "Username")?.Value</span>
+                                    <div class="dropdown-divider"></div>
+                                    <form id="logoutformelement" class="dropdown-item">
+                                        <button type="submit" class="btn btn-link p-0"><i class="fa fa-sign-out me-2"></i>Log ud</button>
+                                    </form>
+                                </div>
+                            }
+                            else
+                            {
+                                <div id="loginForm" class="dropdown-menu dropdown-menu-end p-3" style="width: 300px;">
+                                    <form id="loginformelement">
+                                        <div class="mb-3">
+                                            <label for="username" class="form-label">Brugernavn</label>
+                                            <input type="text" class="form-control" id="username" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="password" class="form-label">Adgangskode</label>
+                                            <input type="password" class="form-control" id="password" required>
+                                        </div>
+                                        <span id="loginMessage" class="text-danger d-block mb-2"></span>
+                                        <button type="submit" class="btn btn-primary w-100">Log ind</button>
+                                        <a href="/AddAccount" class="btn btn-link w-100">Opret konto</a>
+                                    </form>
+                                </div>
+                            }
+                        </div>
+                    </div>
                 </div>
-
             </div>
-        </div>
-
+        </nav>
     </header>
-
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
-
-    <script>
-
-        const toggleButton = document.getElementById('toggleButton');
-        const loginForm = document.getElementById('loginForm');
-        const logOutForm = document.getElementById('logOutForm');
-
-        toggleButton.addEventListener('click', function () {
-            // Toggle login formens synlighed med en animation
-            if (document.getElementById('loginForm') != null)
-                loginForm.classList.toggle('show');
-
-            
-            if (document.getElementById('logOutForm') != null) {
-
-                logOutForm.classList.toggle('show');
-            }
-               
-        });
-        console.log(document.getElementById("logOutForm"));
-        document.addEventListener("DOMContentLoaded", function () {
-            if (document.getElementById("logOutForm") != null) {
-                document.getElementById("logOutForm").addEventListener("click", async function (event) {
-                    event.preventDefault(); // Forhindrer formularen i at blive sendt på normal måde
-
-                    console.log("test");
-                    // Send asynkront loginkald
-                    const response = await fetch("/Login/logout", {
-                        method: "POST", // Brug POST-metoden
-                        headers: {
-                            "Content-Type": "application/json", // Angiv at vi sender JSON
-                        }
-                    });
-
-                    const result = await response.json();
-                    console.log(result)
-                    if (result.redirectUrl) {
-                        // Hvis vi får en redirect URL, omdiriger brugeren
-                        window.location.href = result.redirectUrl; // Manuelt redirect
-
-                    }
-                });
-
-            }
-        });
-     
-
-        if (document.getElementById("loginformelement") != null) {
-            document.getElementById("loginformelement").addEventListener("click", async function (event) {
-                event.preventDefault(); // Forhindrer formularen i at blive sendt på normal måde
-
-                // Hent brugerens input
-                const username = document.getElementById("username").value;
-                const password = document.getElementById("password").value;
-
-                // Send asynkront loginkald
-                const response = await fetch("/Login/login", {
-                    method: "POST", // Brug POST-metoden
-                    headers: {
-                        "Content-Type": "application/json", // Angiv at vi sender JSON
-                    },
-                    body: JSON.stringify({
-                        username: username,
-                        password: password,
-                    }),
-                });
-                const result = await response.json();
-                // Håndtering af serverens svar
-                if (response.ok) {
-                    loginForm.classList.toggle('hide');
-                    if (result.redirectUrl) {
-                        // Hvis vi får en redirect URL, omdiriger brugeren
-                        window.location.href = result.redirectUrl; // Manuelt redirect
-
-                    }
-
-                } else {
-                    // Hvis login fejler, vis en fejlbesked
-                   //
-                    document.getElementById("loginMessage").textContent = result.message;
-                }
-            });
-        }
-
-        async function fetchData() {
-            try {
-                let response = await fetch("/ShoppingBasket");
-                let data = await response.json();
-                document.getElementById("total").textContent = data.total.toFixed(2);
-                document.getElementById("cartCount").textContent = data.itemCount;
-
-            } catch (error) {
-                console.log(error)
-            }
-        }
-
-        fetchData(); // Kald funktionen når siden indlæses
-    </script>
-
 
     <div class="xl-container">
         <main role="main">
@@ -220,14 +106,94 @@
         </main>
     </div>
 
-    @*    <footer class="border-top footer text-muted">
-    <div class="container">
-    &copy; 2024 - ImaginaryShop - <a asp-area="" asp-page="/Privacy">Privacy</a>
-    </div>
-    </footer> *@
-
-
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Log ud formular
+            if (document.getElementById("logoutformelement")) {
+                document.getElementById("logoutformelement").addEventListener("submit", async function (event) {
+                    event.preventDefault();
+                    const response = await fetch("/Login/logout", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        }
+                    });
+
+                    const result = await response.json();
+                    if (result.redirectUrl) {
+                        window.location.href = result.redirectUrl;
+                    }
+                });
+            }
+
+            // Log ind formular
+            if (document.getElementById("loginformelement")) {
+                document.getElementById("loginformelement").addEventListener("submit", async function (event) {
+                    event.preventDefault();
+                    const username = document.getElementById("username").value;
+                    const password = document.getElementById("password").value;
+
+                    const response = await fetch("/Login/login", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            username: username,
+                            password: password,
+                        }),
+                    });
+
+                    const result = await response.json();
+                    if (response.ok && result.redirectUrl) {
+                        window.location.href = result.redirectUrl;
+                    } else {
+                        document.getElementById("loginMessage").textContent = result.message;
+                    }
+                });
+            }
+
+            // Indkøbskurv data
+            async function fetchData() {
+                try {
+                    let response = await fetch("/ShoppingBasket");
+                    let data = await response.json();
+                    document.getElementById("cartCount").textContent = data.itemCount;
+                } catch (error) {
+                    console.log(error)
+                }
+            }
+
+            fetchData();
+        });
+
+        // Bootstrap dropdown initialization
+        document.querySelectorAll('.dropdown-toggle').forEach(function(element) {
+            element.addEventListener('click', function(e) {
+                var dropdownMenu = this.nextElementSibling;
+                if (dropdownMenu.classList.contains('show')) {
+                    dropdownMenu.classList.remove('show');
+                } else {
+                    document.querySelectorAll('.dropdown-menu.show').forEach(function(menu) {
+                        menu.classList.remove('show');
+                    });
+                    dropdownMenu.classList.add('show');
+                }
+            });
+        });
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.matches('.dropdown-toggle') && !e.target.closest('.dropdown-menu')) {
+                document.querySelectorAll('.dropdown-menu.show').forEach(function(menu) {
+                    menu.classList.remove('show');
+                });
+            }
+        });
+    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
