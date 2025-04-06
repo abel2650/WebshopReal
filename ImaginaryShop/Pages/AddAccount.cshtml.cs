@@ -13,6 +13,9 @@ namespace ImaginaryShop.Pages
         [BindProperty]
         public User NewUser { get; set; } = new User();
 
+        [BindProperty]
+        public string ConfirmPassword { get; set; }
+
         private readonly IUserRepository _userRepository;
 
         public AddAccountModel(IUserRepository userRepository)
@@ -28,11 +31,26 @@ namespace ImaginaryShop.Pages
             Debug.WriteLine($"[DEBUG] Username: {NewUser?.UserName}");
             Debug.WriteLine($"[DEBUG] Email: {NewUser?.Email}");
             Debug.WriteLine($"[DEBUG] Password (Before Hashing): {NewUser?.PasswordHash}");
+            Debug.WriteLine($"[DEBUG] Confirm Password: {ConfirmPassword}");
 
             if (NewUser == null || string.IsNullOrEmpty(NewUser.Email) || string.IsNullOrEmpty(NewUser.PasswordHash))
             {
                 Debug.WriteLine("[FEJL] Brugerdata er ikke korrekt modtaget!");
                 ModelState.AddModelError(string.Empty, "Alle felter skal udfyldes.");
+                return Page();
+            }
+
+            if (string.IsNullOrEmpty(ConfirmPassword))
+            {
+                Debug.WriteLine("[FEJL] Bekræftelsespassword mangler!");
+                ModelState.AddModelError(string.Empty, "Du skal bekræfte dit password.");
+                return Page();
+            }
+
+            if (NewUser.PasswordHash != ConfirmPassword)
+            {
+                Debug.WriteLine("[FEJL] Passwords matcher ikke!");
+                ModelState.AddModelError(string.Empty, "Passwords matcher ikke.");
                 return Page();
             }
 

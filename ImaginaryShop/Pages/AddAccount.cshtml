@@ -204,7 +204,7 @@
                     <span toggle="#password" class="zmdi zmdi-eye field-icon toggle-password"></span>
                 </div>
                 <div class="form-group">
-                    <input type="password" class="form-input" name="re_password" id="re_password" placeholder="Gentag dit password">
+                    <input type="password" class="form-input" id="re_password" asp-for="ConfirmPassword" placeholder="Gentag dit password">
                 </div>
 
                 <div class="password-strength-container">
@@ -237,21 +237,30 @@
             $('#passwordMessage').text(result.feedback.suggestions.join(' '));
 
             updatePasswordStrength(result.score, password);
-
-            if (isPasswordValid(password, result)) {
-                $('#submit').prop('disabled', false);
-                $('#passwordErrorMessage').text('');
-            } else {
-                $('#submit').prop('disabled', true);
-                $('#passwordErrorMessage').text('Passwordet skal være minimum 12 tegn langt og indeholde forskellige typer tegn.');
-            }
+            validatePasswords();
         });
 
-        function isPasswordValid(password, result) {
-            if (password.length < 12 || result.score < 3) {
-                return false;
+        $('#re_password').on('input', function() {
+            validatePasswords();
+        });
+
+        function validatePasswords() {
+            let password = $('#passwordHash').val();
+            let confirmPassword = $('#re_password').val();
+            
+            if (password !== confirmPassword) {
+                $('#passwordErrorMessage').text('Passwords matcher ikke.');
+                $('#submit').prop('disabled', true);
+            } else if (password.length < 12) {
+                $('#passwordErrorMessage').text('Passwordet skal være minimum 12 tegn langt.');
+                $('#submit').prop('disabled', true);
+            } else {
+                $('#passwordErrorMessage').text('');
+                let result = zxcvbn(password);
+                if (result.score >= 3) {
+                    $('#submit').prop('disabled', false);
+                }
             }
-            return true;
         }
 
         function updatePasswordStrength(score, password) {
