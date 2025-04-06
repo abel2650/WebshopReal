@@ -17,6 +17,15 @@ namespace ImaginaryShop.Pages
             return Page();
         }
 
+        public IActionResult OnGetCartData()
+        {
+            var basket = GetShoppingBasket();
+            return new JsonResult(new { 
+                itemCount = basket.GetQuantity(),
+                total = basket.GetTotal()
+            });
+        }
+
         [ValidateAntiForgeryToken]
         public IActionResult OnPostUpdateQuantity(int productId, string action)
         {

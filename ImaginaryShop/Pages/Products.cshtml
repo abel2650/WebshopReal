@@ -132,8 +132,10 @@
                         if (!response.ok) throw new Error("Fejl ved forespørgsel");
 
                         let data = await response.json();
-                        document.getElementById('total').textContent = data.total.toFixed(2);
                         document.getElementById('cartCount').textContent = data.itemCount;
+                        
+                        // Opdater kurven i hele systemet
+                        window.dispatchEvent(new Event('cartUpdated'));
                         
                         // Vis success animation
                         icon.className = 'fas fa-check';

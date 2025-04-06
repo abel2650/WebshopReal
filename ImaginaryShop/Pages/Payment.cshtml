@@ -57,7 +57,7 @@
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item d-flex justify-content-between">
                             <span>Subtotal</span>
-                            <span id="subtotal">54.98 DKK</span>
+                            <span id="subtotal">@Model.Basket.GetTotal() @Model.Basket.Products.FirstOrDefault()?.Product.Currency</span>
                         </li>
                         <li class="list-group-item d-flex justify-content-between">
                             <span>Levering</span>
@@ -65,7 +65,7 @@
                         </li>
                         <li class="list-group-item d-flex justify-content-between">
                             <span>Total</span>
-                            <strong id="total">54.98 DKK</strong>
+                            <strong id="total">@Model.Basket.GetTotal() @Model.Basket.Products.FirstOrDefault()?.Product.Currency</strong>
                         </li>
                     </ul>
                 </div>
