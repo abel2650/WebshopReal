@@ -41,6 +41,9 @@ namespace ImaginaryShop.Pages
                 // Hash passwordet med Argon2, før det gemmes
                 NewUser.PasswordHash = Argon2.Hash(NewUser.PasswordHash);
 
+                // Sæt brugerens rolle til Customer
+                NewUser.Role = ImaginaryShop.Model.User.UserRole.Customer;
+                
                 NewUser.CreatedAt = DateTime.UtcNow;
                 _userRepository.AddUser(NewUser);
 
@@ -51,8 +54,8 @@ namespace ImaginaryShop.Pages
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[FEJL] Kunne ikke oprette bruger: {ex.Message}");
-                ModelState.AddModelError(string.Empty, "Der opstod en fejl under oprettelsen.");
+                Debug.WriteLine($"[FEJL] {ex.Message}");
+                ModelState.AddModelError(string.Empty, "Der opstod en fejl ved oprettelse af brugeren. Prøv igen senere.");
                 return Page();
             }
         }
