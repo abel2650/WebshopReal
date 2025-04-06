@@ -10,7 +10,7 @@ namespace ImaginaryShop.Model
         /// Brugernavnet, som brugeren indtaster ved login.
         /// </summary>
         /// <remarks>
-        /// - Skal være mellem 3 og 50 tegn.  
+        /// - Skal være mellem 6 og 50 tegn.  
         /// - Kun bogstaver, tal og underscores er tilladt.  
         /// - Feltet er obligatorisk.
         /// </remarks>
@@ -23,7 +23,7 @@ namespace ImaginaryShop.Model
         /// Adgangskoden, som brugeren indtaster ved login.
         /// </summary>
         /// <remarks>
-        /// - Skal være mindst 6 tegn lang.  
+        /// - Skal være mindst 12 tegn lang.  
         /// - Feltet er obligatorisk.
         /// </remarks>
         [Required(ErrorMessage = "Adgangskode er påkrævet")]
