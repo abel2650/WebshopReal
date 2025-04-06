@@ -1,0 +1,121 @@
+@page
+@model ImaginaryShop.Pages.Admin.ProductsModel
+@{
+    ViewData["Title"] = "Admin - Product Management";
+}
+
+<div class="container mt-4">
+    <h1>Product Management</h1>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">@(Model.EditingProduct.ProductID != 0 ? "Edit Product" : "Add New Product")</h5>
+                    <form method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="EditingProduct.ProductID" />
+                        <input type="hidden" asp-for="EditingProduct.CreatedAt" />
+                        <input type="hidden" asp-for="EditingProduct.UpdatedAt" />
+                        
+                        <div class="mb-3">
+                            <label asp-for="EditingProduct.ProductName" class="form-label">Product Name</label>
+                            <input asp-for="EditingProduct.ProductName" class="form-control" required />
+                            <span asp-validation-for="EditingProduct.ProductName" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="EditingProduct.Description" class="form-label">Description</label>
+                            <textarea asp-for="EditingProduct.Description" class="form-control" required></textarea>
+                            <span asp-validation-for="EditingProduct.Description" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="EditingProduct.Price" class="form-label">Price</label>
+                            <input asp-for="EditingProduct.Price" class="form-control" type="number" step="0.01" required />
+                            <span asp-validation-for="EditingProduct.Price" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="EditingProduct.StockQuantity" class="form-label">Stock Quantity</label>
+                            <input asp-for="EditingProduct.StockQuantity" class="form-control" type="number" required />
+                            <span asp-validation-for="EditingProduct.StockQuantity" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="EditingProduct.Category" class="form-label">Category</label>
+                            <input asp-for="EditingProduct.Category" class="form-control" required />
+                            <span asp-validation-for="EditingProduct.Category" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="EditingProduct.ImageUrl" class="form-label">Image URL</label>
+                            <input asp-for="EditingProduct.ImageUrl" class="form-control" required />
+                            <span asp-validation-for="EditingProduct.ImageUrl" class="text-danger"></span>
+                        </div>
+
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            <div class="alert alert-danger">
+                                <div asp-validation-summary="All" class="text-danger"></div>
+                            </div>
+                        }
+
+                        <button type="submit" class="btn btn-primary">@(Model.EditingProduct.ProductID != 0 ? "Update" : "Add") Product</button>
+                        @if (Model.EditingProduct.ProductID != 0)
+                        {
+                            <a asp-page="./Products" class="btn btn-secondary">Cancel</a>
+                        }
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Existing Products</h5>
+                    <a asp-page="./Products" class="btn btn-success mb-3">+ Opret nyt produkt</a>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Price</th>
+                                    <th>Stock</th>
+                                    <th>Category</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var product in Model.Products)
+                                {
+                                    <tr>
+                                        <td>@product.ProductName</td>
+                                        <td>@product.Price @product.Currency</td>
+                                        <td>@product.StockQuantity</td>
+                                        <td>@product.Category</td>
+                                        <td>
+                                            <a asp-page="./Products" asp-route-id="@product.ProductID" class="btn btn-sm btn-primary">Edit</a>
+                                            <form method="post" asp-page-handler="Delete" asp-route-id="@product.ProductID" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this product?')">Delete</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Add form submission debugging
+        document.querySelector('form').addEventListener('submit', function(e) {
+            console.log('Form submitted');
+            console.log('Product ID:', document.querySelector('[name="EditingProduct.ProductID"]').value);
+            console.log('Product Name:', document.querySelector('[name="EditingProduct.ProductName"]').value);
+            console.log('Price:', document.querySelector('[name="EditingProduct.Price"]').value);
+        });
+    </script>
+} 

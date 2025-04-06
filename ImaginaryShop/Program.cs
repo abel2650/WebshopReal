@@ -4,7 +4,7 @@ using ImaginaryShop.Model.Services;
 using Isopoh.Cryptography.Argon2;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.CookiePolicy;
-
+using System.Diagnostics;
 
 namespace ImaginaryShop
 {
@@ -25,7 +25,7 @@ namespace ImaginaryShop
             builder.Services.AddDistributedMemoryCache(); // Bruger hukommelsen til at lagre sessiondata
             builder.Services.Configure<CookiePolicyOptions>(options =>
             {
-                // Gør cookien HttpOnly, så den kun kan tilgås af serveren (beskytter mod XSS-angreb)
+                // Gï¿½r cookien HttpOnly, sï¿½ den kun kan tilgï¿½s af serveren (beskytter mod XSS-angreb)
                 options.HttpOnly = HttpOnlyPolicy.Always;
 
                 // Kun send cookies via sikre forbindelser (HTTPS)
@@ -39,32 +39,32 @@ namespace ImaginaryShop
             {
                 options.IdleTimeout = TimeSpan.FromMinutes(30); // Timeout for session
                 options.Cookie.HttpOnly = true; // Forhindrer adgang til sessionen fra JavaScript
-                options.Cookie.IsEssential = true; // Sørger for, at session virker uden cookie-consent
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Kræver HTTPS for session-cookies
+                options.Cookie.IsEssential = true; // Sï¿½rger for, at session virker uden cookie-consent
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Krï¿½ver HTTPS for session-cookies
             });
 
             builder.Services.AddAntiforgery(o => o.HeaderName = "XSRF-TOKEN");
         
-            //Så cookies kan tilgås i cshtml
+            //Sï¿½ cookies kan tilgï¿½s i cshtml
             builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
       .AddCookie(options =>
       {
 
-          options.Cookie.Name = "AuthCookie";  // Angiv navnet på autentificeringscookien
+          options.Cookie.Name = "AuthCookie";  // Angiv navnet pï¿½ autentificeringscookien
           options.Cookie.SecurePolicy = CookieSecurePolicy.Always;  // Kun HTTPS
           options.Cookie.SameSite = SameSiteMode.Lax;  // SameSite politik for autentificeringscookies
-          options.Cookie.Expiration = null;  // Ingen udløbsdato
+          options.Cookie.Expiration = null;  // Ingen udlï¿½bsdato
           options.Cookie.MaxAge = null;   // Ingen max alder
-          options.Cookie.IsEssential = true; // Cookien er nødvendig for applikationen
+          options.Cookie.IsEssential = true; // Cookien er nï¿½dvendig for applikationen
       });
 
 
 
 
             var app = builder.Build();
-            app.UseSession();  // Dette skal være før app.UseEndpoints()
+            app.UseSession();  // Dette skal vï¿½re fï¿½r app.UseEndpoints()
 
 
             // Registrer IHttpContextAccessor
@@ -87,14 +87,14 @@ namespace ImaginaryShop
             app.UseRouting();
             app.UseCookiePolicy();
 
-            // Tilføj autentificering og autorisation
+            // Tilfï¿½j autentificering og autorisation
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapRazorPages();
             app.MapControllers();
 
-            // Seed(app.Services);
+            Seed(app.Services);
             app.Run();
         }
 
@@ -103,23 +103,27 @@ namespace ImaginaryShop
         {
             User u = new User();
             
-            u.FullName = "The master2";
-            u.Email = "Test2436";
-            u.Role = User.UserRole.Customer;
+            u.FullName = "Admin User";
+            u.UserName = "admin123";
+            u.Email = "admin@imaginaryshop.com";
+            u.Role = User.UserRole.Admin;
 
-            string pass = "123456789012";
+            string pass = "Admin123456789"; // Strong password
             string hashedpassword = Argon2.Hash(pass);
             u.PasswordHash = hashedpassword;
 
-
-
             UserRepository ur = new UserRepository(serviceProvider.GetRequiredService<IConfiguration>());
-            ur.CreateUser(u);
-
-
-
-
-
+            
+            // Check if admin user already exists
+            if (ur.GetUserByUserName(u.UserName) == null)
+            {
+                ur.CreateUser(u);
+                Debug.WriteLine("Admin user created successfully");
+            }
+            else
+            {
+                Debug.WriteLine("Admin user already exists");
+            }
         }
     }
 }
