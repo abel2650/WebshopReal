@@ -10,7 +10,7 @@ namespace ImaginaryShop.Model
         /// Brugernavnet, som brugeren indtaster ved login.
         /// </summary>
         /// <remarks>
-        /// - Skal være mellem 6 og 50 tegn.  
+        /// - Skal være mellem 5 og 50 tegn.  
         /// - Kun bogstaver, tal og underscores er tilladt.  
         /// - Feltet er obligatorisk.
         /// </remarks>
